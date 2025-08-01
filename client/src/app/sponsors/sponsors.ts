@@ -4,8 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-sponsors',
   imports: [],
   templateUrl: './sponsors.html',
-  styleUrl: './sponsors.css'
+  styleUrl: './sponsors.scss',
 })
-export class Sponsors {
-
-}
+export class Sponsors {}
