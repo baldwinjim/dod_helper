@@ -1,0 +1,421 @@
+openapi: 3.0.0
+info:
+  title: DoD Helper API
+  description: API for managing conference speakers, sponsors, and image uploads.
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+    description: Local development server
+
+paths:
+  /images/{imagePath}:
+    get:
+      summary: Retrieve an image
+      description: Serves an image from the static directory.
+      parameters:
+        - name: imagePath
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Relative path to the image
+      responses:
+        '200':
+          description: Image file
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Image not found
+
+  /speakers:
+    get:
+      summary: Get all speakers
+      responses:
+        '200':
+          description: List of all speakers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  speakers:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Speaker'
+
+  /speakers/{conferenceId}:
+    post:
+      summary: Create a new speaker
+      parameters:
+        - name: conferenceId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - firstName
+                - lastName
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+      responses:
+        '201':
+          description: Speaker created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Speaker'
+        '400':
+          description: Invalid input
+
+    get:
+      summary: Get speakers for a specific conference
+      parameters:
+        - name: conferenceId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of speakers for the conference
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  conferenceId:
+                    type: string
+                  speakers:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Speaker'
+        '400':
+          description: Missing conferenceId
+
+  /speakers/{conferenceId}/{id}:
+    put:
+      summary: Update a speaker
+      parameters:
+        - name: conferenceId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                bio:
+                  type: string
+                phone:
+                  type: string
+                profilepic:
+                  type: string
+      responses:
+        '200':
+          description: Speaker updated successfully
+        '400':
+          description: Invalid input
+        '404':
+          description: Speaker not found
+
+    delete:
+      summary: Delete a speaker
+      parameters:
+        - name: conferenceId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Speaker deleted successfully
+        '404':
+          description: Speaker not found
+
+  /sponsors:
+    get:
+      summary: Get all sponsors
+      responses:
+        '200':
+          description: List of all sponsors
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sponsors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Sponsor'
+
+  /sponsors/{conferenceId}:
+    post:
+      summary: Create a new sponsor
+      parameters:
+        - name: conferenceId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                logo:
+                  type: string
+                url:
+                  type: string
+                level:
+                  type: string
+      responses:
+        '201':
+          description: Sponsor created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sponsor'
+        '400':
+          description: Invalid input
+
+    get:
+      summary: Get sponsors for a specific conference
+      parameters:
+        - name: conferenceId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of sponsors for the conference
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  conferenceId:
+                    type: string
+                  sponsors:
+                    type: array
+                    items:
+                       $ref: '#/components/schemas/Sponsor'
+
+  /sponsors/{conferenceId}/{id}:
+    put:
+      summary: Update a sponsor
+      parameters:
+        - name: conferenceId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                logo:
+                  type: string
+                url:
+                  type: string
+                level:
+                  type: string
+      responses:
+        '200':
+          description: Sponsor updated successfully
+        '400':
+          description: Invalid input
+        '404':
+          description: Sponsor not found
+
+    delete:
+      summary: Delete a sponsor
+      parameters:
+        - name: conferenceId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Sponsor deleted successfully
+        '404':
+          description: Sponsor not found
+
+  /conferences:
+    get:
+      summary: Get all conferences
+      responses:
+        '200':
+          description: List of conferences
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  conferences:
+                    type: array
+                    items:
+                      type: string
+    post:
+      summary: Create a new conference
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - city
+                - year
+              properties:
+                city:
+                  type: string
+                year:
+                  type: integer
+      responses:
+        '201':
+          description: Conference created
+        '400':
+          description: Invalid input
+        '409':
+          description: Conference already exists
+
+  /upload/{conferenceId}:
+    post:
+      summary: Upload an image file
+      parameters:
+        - name: conferenceId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - type
+              properties:
+                file:
+                  type: string
+                  format: binary
+                type:
+                  type: string
+                  enum: [speaker, company]
+                firstName:
+                  type: string
+                  description: Required if type is 'speaker'
+                lastName:
+                  type: string
+                  description: Required if type is 'speaker'
+                companyName:
+                  type: string
+                  description: Required if type is 'company'
+      responses:
+        '201':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  url:
+                    type: string
+        '400':
+          description: Invalid input
+
+components:
+  schemas:
+    Speaker:
+      type: object
+      properties:
+        id:
+          type: integer
+        conferenceId:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        bio:
+          type: string
+        phone:
+          type: string
+        profilepic:
+          type: string
+    Sponsor:
+      type: object
+      properties:
+        id:
+          type: integer
+        conferenceId:
+          type: string
+        name:
+          type: string
+        logo:
+          type: string
+        url:
+          type: string
+        level:
+          type: string
